@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             //Welcome
             myDialog("Welcome " + nameString);
+            startActivity(new Intent(MainActivity.this, MyListView.class));
         }
 
 
