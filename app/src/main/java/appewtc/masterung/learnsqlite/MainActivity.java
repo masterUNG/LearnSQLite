@@ -1,6 +1,8 @@
 package appewtc.masterung.learnsqlite;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private Button signInButton, singUpButton;
     private MyManage myManage;
     private EditText userEditText, passwordEditText;
-    private String userString, passwordString;
+    private String userString, passwordString, passwordTrueString, nameString;
 
 
     @Override
@@ -60,10 +62,51 @@ public class MainActivity extends AppCompatActivity {
         if (userString.equals("") || passwordString.equals("")) {
             //Have Space
             myDialog(getResources().getString(R.string.haveSpace));
+        } else if (checkUser()) {
+            //User False
+            myDialog(getResources().getString(R.string.userFalse));
+        } else if (!passwordString.equals(passwordTrueString)) {
+            //Password False
+            myDialog(getResources().getString(R.string.passFalse));
+        } else {
+            //Welcome
+            myDialog("Welcome " + nameString);
         }
 
 
     }   // checkAuthen
+
+    private boolean checkUser() {
+
+        boolean result = true;  // true ==> User False
+
+        try {
+
+            //Connected SQLite
+            SQLiteDatabase sqLiteDatabase = openOrCreateDatabase(MyOpenHelper.database_name,
+                    MODE_PRIVATE, null);
+            //Create Cursor ==> คือการเอาฐานข้อมูลไป ไปประมวลผลใน แรม
+            Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM userTABLE", null);
+            cursor.moveToFirst();
+
+            for (int i=0;i<cursor.getCount();i++) {
+
+                if (userString.equals(cursor.getString(2))) {
+                    result = false;
+                    passwordTrueString = cursor.getString(3);
+                    nameString = cursor.getString(1);
+                }
+
+                cursor.moveToNext();
+            }   // for
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 
     private void myDialog(String string) {
         Toast.makeText(MainActivity.this, string, Toast.LENGTH_SHORT).show();
