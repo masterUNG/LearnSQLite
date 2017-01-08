@@ -44,6 +44,9 @@ public class SignUp extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 } else {
                     //No Space
+                    MyManage myManage = new MyManage(SignUp.this);
+                    myManage.addNewValue(nameString, userString, passwordString);
+                    finish();
 
                 }   // if
 
